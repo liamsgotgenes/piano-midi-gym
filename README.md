@@ -1,4 +1,4 @@
-# MIDI Reaction Trainer
+# Piano MIDI Gym 💪
 
 A desktop app that improves note and chord muscle memory by showing random targets and timing how quickly you play them on a MIDI keyboard.
 
