@@ -61,7 +61,7 @@ class PracticeScreen:
         with dpg.group(tag=self.TAG, parent="primary_window"):
 
             # ── Top bar card ─────────────────────────────────────
-            with dpg.child_window(height=50, border=True, tag="practice_topbar"):
+            with dpg.child_window(height=42, border=True, tag="practice_topbar"):
                 dpg.bind_item_theme("practice_topbar", "theme_card")
                 with dpg.group(horizontal=True):
                     dpg.add_text("", tag="progress_text", color=TEXT_SECONDARY)
@@ -79,10 +79,10 @@ class PracticeScreen:
                     quit_btn = dpg.add_button(label="End Session", callback=self._on_quit)
                     dpg.bind_item_theme(quit_btn, "theme_btn_danger")
 
-            dpg.add_spacer(height=20)
+            dpg.add_spacer(height=10)
 
             # ── Central target area ──────────────────────────────
-            with dpg.child_window(height=340, border=True, tag="practice_target_card"):
+            with dpg.child_window(height=480, border=True, tag="practice_target_card"):
                 dpg.bind_item_theme("practice_target_card", "theme_card_accent")
 
                 dpg.add_spacer(height=10)
@@ -115,10 +115,10 @@ class PracticeScreen:
                 if self.font_heading:
                     dpg.bind_item_font(feedback_id, self.font_heading)
 
-            dpg.add_spacer(height=16)
+            dpg.add_spacer(height=8)
 
             # ── Pressed notes bar ────────────────────────────────
-            with dpg.child_window(height=60, border=True, tag="practice_pressed_card"):
+            with dpg.child_window(height=55, border=True, tag="practice_pressed_card"):
                 dpg.bind_item_theme("practice_pressed_card", "theme_card")
                 dpg.add_text("Currently pressed:", color=TEXT_MUTED)
                 pressed_id = dpg.add_text("--", tag="pressed_notes_text", color=CYAN_HIGHLIGHT)

@@ -48,10 +48,10 @@ class ResultsScreen:
             title = dpg.add_text("Session Complete", color=GREEN_SUCCESS)
             if self.font_heading:
                 dpg.bind_item_font(title, self.font_heading)
-            dpg.add_spacer(height=10)
+            dpg.add_spacer(height=6)
 
             # ── Summary stats card ───────────────────────────────
-            with dpg.child_window(height=130, border=True, tag="card_summary"):
+            with dpg.child_window(height=110, border=True, tag="card_summary"):
                 dpg.bind_item_theme("card_summary", "theme_card_accent")
                 with dpg.group(horizontal=True):
                     # Left column — big accuracy
@@ -82,12 +82,12 @@ class ResultsScreen:
                             dpg.bind_item_font(streak_id, self.font_medium)
                         dpg.add_text("", tag="res_session_detail", color=TEXT_SECONDARY)
 
-            dpg.add_spacer(height=10)
+            dpg.add_spacer(height=6)
 
             # ── Two-column: per-item + slowest ───────────────────
             with dpg.group(horizontal=True):
                 # Per-item breakdown
-                with dpg.child_window(width=520, height=250, border=True, tag="card_per_item"):
+                with dpg.child_window(width=680, height=280, border=True, tag="card_per_item"):
                     dpg.bind_item_theme("card_per_item", "theme_card")
                     self._section_heading("Per-Item Breakdown")
                     dpg.add_spacer(height=4)
@@ -97,29 +97,29 @@ class ResultsScreen:
                 dpg.add_spacer(width=10)
 
                 # Slowest items
-                with dpg.child_window(width=-1, height=250, border=True, tag="card_slowest"):
+                with dpg.child_window(width=-1, height=280, border=True, tag="card_slowest"):
                     dpg.bind_item_theme("card_slowest", "theme_card")
                     self._section_heading("Slowest Items", color=ORANGE_SLOW)
                     dpg.add_spacer(height=4)
                     with dpg.group(tag="slowest_items_group"):
                         pass
 
-            dpg.add_spacer(height=10)
+            dpg.add_spacer(height=6)
 
             # ── History card ─────────────────────────────────────
-            with dpg.child_window(height=140, border=True, tag="card_history"):
+            with dpg.child_window(height=120, border=True, tag="card_history"):
                 dpg.bind_item_theme("card_history", "theme_card")
                 self._section_heading("Recent Sessions")
                 dpg.add_spacer(height=4)
                 with dpg.group(tag="history_group"):
                     pass
 
-            dpg.add_spacer(height=12)
+            dpg.add_spacer(height=6)
 
             # ── Action button ────────────────────────────────────
             btn = dpg.add_button(
                 label="New Session", callback=self._on_restart,
-                width=200, height=45,
+                width=200, height=38,
             )
             dpg.bind_item_theme(btn, "theme_btn_primary")
 

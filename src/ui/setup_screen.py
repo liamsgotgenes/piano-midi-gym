@@ -47,158 +47,163 @@ class SetupScreen:
         if dpg.does_item_exist(self.TAG):
             dpg.delete_item(self.TAG)
 
+        COL_HEIGHT = 600
+
         with dpg.group(tag=self.TAG, parent="primary_window"):
 
-            # ── Title ────────────────────────────────────────────
-            dpg.add_spacer(height=4)
+            # ── Title row ──────────────────────────────────────
+            dpg.add_spacer(height=2)
             title = dpg.add_text("MIDI Reaction Trainer", color=ACCENT_BLUE)
             if self.font_heading:
                 dpg.bind_item_font(title, self.font_heading)
             dpg.add_text("Build speed and accuracy with your MIDI keyboard", color=TEXT_MUTED)
-            dpg.add_spacer(height=12)
+            dpg.add_spacer(height=6)
 
-            # ── MIDI device card ─────────────────────────────────
-            with dpg.child_window(height=105, border=True, tag="card_midi"):
-                dpg.bind_item_theme("card_midi", "theme_card")
-                self._section_heading("MIDI Device")
-                dpg.add_spacer(height=4)
-                with dpg.group(horizontal=True):
-                    ports = self.midi.list_input_ports()
-                    port_items = ports if ports else ["(No MIDI devices found)"]
-                    dpg.add_combo(
-                        items=port_items,
-                        default_value=port_items[0] if port_items else "",
-                        tag="midi_port_combo",
-                        callback=self._on_port_selected,
-                        width=380,
-                    )
-                    btn = dpg.add_button(label="Refresh", callback=self._refresh_ports)
-                    dpg.bind_item_theme(btn, "theme_btn_secondary")
-                    dpg.add_spacer(width=12)
-                    dpg.add_text("", tag="midi_status_text", color=TEXT_MUTED)
-
-            dpg.add_spacer(height=8)
-
-            # ── Exercise mode card ───────────────────────────────
-            with dpg.child_window(height=140, border=True, tag="card_mode"):
-                dpg.bind_item_theme("card_mode", "theme_card")
-                self._section_heading("Exercise Mode")
-                dpg.add_spacer(height=4)
-                dpg.add_radio_button(
-                    items=["Single Note", "Chord", "Inversion Drill", "Staff Reading"],
-                    default_value="Single Note",
-                    tag="mode_radio",
-                    callback=self._on_mode_changed,
-                    horizontal=True,
-                )
-
-                # Staff sub-options (visible for staff reading mode)
-                with dpg.group(tag="staff_options_group", show=False):
-                    dpg.add_spacer(height=4)
-                    with dpg.group(horizontal=True):
-                        dpg.add_text("Clef:", color=TEXT_SECONDARY)
-                        dpg.add_radio_button(
-                            items=["Treble", "Bass"],
-                            default_value="Treble",
-                            tag="staff_clef_radio",
-                            callback=self._on_staff_option_changed,
-                            horizontal=True,
-                        )
-                        dpg.add_spacer(width=20)
-                        dpg.add_text("Content:", color=TEXT_SECONDARY)
-                        dpg.add_radio_button(
-                            items=["Notes", "Chords"],
-                            default_value="Notes",
-                            tag="staff_content_radio",
-                            callback=self._on_staff_option_changed,
-                            horizontal=True,
-                        )
-
-                # Chord qualities (visible for chord/inversion/staff-chord modes)
-                with dpg.group(tag="chord_quality_group", show=False):
-                    dpg.add_spacer(height=4)
-                    dpg.add_text("Chord Qualities:", color=TEXT_SECONDARY)
-                    with dpg.group(horizontal=True):
-                        dpg.add_checkbox(label="Major", default_value=True, tag="qual_maj",
-                                         callback=lambda s, a: self._toggle_quality("maj", a))
-                        dpg.add_checkbox(label="Minor", default_value=True, tag="qual_min",
-                                         callback=lambda s, a: self._toggle_quality("min", a))
-                        dpg.add_checkbox(label="Diminished", default_value=True, tag="qual_dim",
-                                         callback=lambda s, a: self._toggle_quality("dim", a))
-
-            dpg.add_spacer(height=8)
-
-            # ── Key selection card ───────────────────────────────
-            with dpg.child_window(height=200, border=True, tag="card_keys"):
-                dpg.bind_item_theme("card_keys", "theme_card")
-                self._section_heading("Key Selection")
-                dpg.add_spacer(height=4)
-
-                # Presets
-                with dpg.group(horizontal=True):
-                    for lbl, cb in [
-                        ("C major only", lambda: self._preset_keys(["C"], "major")),
-                        ("All Major", lambda: self._preset_all("major")),
-                        ("All Minor", lambda: self._preset_all("minor")),
-                        ("Clear", self._clear_keys),
-                    ]:
-                        btn = dpg.add_button(label=lbl, callback=cb)
-                        dpg.bind_item_theme(btn, "theme_btn_secondary")
-
-                dpg.add_spacer(height=6)
-                dpg.add_text("Major:", color=TEXT_SECONDARY)
-                for row_keys in [ALL_MAJOR_KEYS[:7], ALL_MAJOR_KEYS[7:]]:
-                    with dpg.group(horizontal=True):
-                        for key in row_keys:
-                            tag = f"key_{key.root}_{key.mode}"
-                            dpg.add_checkbox(
-                                label=key.root,
-                                default_value=(key.root == "C" and key.mode == "major"),
-                                tag=tag,
-                                callback=lambda s, a, k=key: self._toggle_key(k, a),
-                            )
-                            self._selected_key_checks[f"{key.root}_{key.mode}"] = (key.root == "C" and key.mode == "major")
-
-                dpg.add_spacer(height=4)
-                dpg.add_text("Minor:", color=TEXT_SECONDARY)
-                for row_keys in [ALL_MINOR_KEYS[:6], ALL_MINOR_KEYS[6:]]:
-                    with dpg.group(horizontal=True):
-                        for key in row_keys:
-                            tag = f"key_{key.root}_{key.mode}"
-                            dpg.add_checkbox(
-                                label=key.root,
-                                default_value=False,
-                                tag=tag,
-                                callback=lambda s, a, k=key: self._toggle_key(k, a),
-                            )
-                            self._selected_key_checks[f"{key.root}_{key.mode}"] = False
-
-            dpg.add_spacer(height=8)
-
-            # ── Session options + Start ──────────────────────────
+            # ── Two-column layout ──────────────────────────────
             with dpg.group(horizontal=True):
-                with dpg.child_window(width=300, height=80, border=True, tag="card_options"):
-                    dpg.bind_item_theme("card_options", "theme_card")
-                    dpg.add_text("Questions per session:", color=TEXT_SECONDARY)
-                    dpg.add_input_int(
-                        default_value=20, min_value=5, max_value=200,
-                        tag="question_count_input", width=120,
-                        callback=lambda s, a: setattr(self, "_question_count", a),
+
+                # ━━ LEFT COLUMN: Configuration ━━━━━━━━━━━━━━━━━
+                with dpg.child_window(width=620, height=COL_HEIGHT, border=True, tag="card_config"):
+                    dpg.bind_item_theme("card_config", "theme_card")
+
+                    # ▸ MIDI Device ──────────────────────────
+                    self._section_heading("MIDI Device")
+                    dpg.add_spacer(height=2)
+                    with dpg.group(horizontal=True):
+                        ports = self.midi.list_input_ports()
+                        port_items = ports if ports else ["(No MIDI devices found)"]
+                        dpg.add_combo(
+                            items=port_items,
+                            default_value=port_items[0] if port_items else "",
+                            tag="midi_port_combo",
+                            callback=self._on_port_selected,
+                            width=380,
+                        )
+                        btn = dpg.add_button(label="Refresh", callback=self._refresh_ports)
+                        dpg.bind_item_theme(btn, "theme_btn_secondary")
+                        dpg.add_spacer(width=8)
+                        dpg.add_text("", tag="midi_status_text", color=TEXT_MUTED)
+
+                    dpg.add_separator()
+                    dpg.add_spacer(height=4)
+
+                    # ▸ Exercise Mode ────────────────────────
+                    self._section_heading("Exercise Mode")
+                    dpg.add_spacer(height=2)
+                    dpg.add_radio_button(
+                        items=["Single Note", "Chord", "Inversion Drill", "Staff Reading"],
+                        default_value="Single Note",
+                        tag="mode_radio",
+                        callback=self._on_mode_changed,
+                        horizontal=True,
                     )
 
-                dpg.add_spacer(width=16)
+                    # Staff sub-options (visible for staff reading mode)
+                    with dpg.group(tag="staff_options_group", show=False):
+                        dpg.add_spacer(height=2)
+                        with dpg.group(horizontal=True):
+                            dpg.add_text("Clef:", color=TEXT_SECONDARY)
+                            dpg.add_radio_button(
+                                items=["Treble", "Bass"],
+                                default_value="Treble",
+                                tag="staff_clef_radio",
+                                callback=self._on_staff_option_changed,
+                                horizontal=True,
+                            )
+                            dpg.add_spacer(width=16)
+                            dpg.add_text("Content:", color=TEXT_SECONDARY)
+                            dpg.add_radio_button(
+                                items=["Notes", "Chords"],
+                                default_value="Notes",
+                                tag="staff_content_radio",
+                                callback=self._on_staff_option_changed,
+                                horizontal=True,
+                            )
 
-                with dpg.group():
-                    dpg.add_spacer(height=10)
+                    # Chord qualities (visible for chord/inversion/staff-chord modes)
+                    with dpg.group(tag="chord_quality_group", show=False):
+                        dpg.add_spacer(height=2)
+                        dpg.add_text("Chord Qualities:", color=TEXT_SECONDARY)
+                        with dpg.group(horizontal=True):
+                            dpg.add_checkbox(label="Major", default_value=True, tag="qual_maj",
+                                             callback=lambda s, a: self._toggle_quality("maj", a))
+                            dpg.add_checkbox(label="Minor", default_value=True, tag="qual_min",
+                                             callback=lambda s, a: self._toggle_quality("min", a))
+                            dpg.add_checkbox(label="Diminished", default_value=True, tag="qual_dim",
+                                             callback=lambda s, a: self._toggle_quality("dim", a))
+
+                    dpg.add_separator()
+                    dpg.add_spacer(height=4)
+
+                    # ▸ Session ──────────────────────────────
+                    self._section_heading("Session")
+                    dpg.add_spacer(height=2)
+                    with dpg.group(horizontal=True):
+                        dpg.add_text("Questions:", color=TEXT_SECONDARY)
+                        dpg.add_input_int(
+                            default_value=20, min_value=5, max_value=200,
+                            tag="question_count_input", width=100,
+                            callback=lambda s, a: setattr(self, "_question_count", a),
+                        )
+
+                    dpg.add_spacer(height=16)
+
                     start_btn = dpg.add_button(
                         label="Start Training",
                         callback=self._on_start_clicked,
                         tag="start_button",
-                        width=220, height=50,
+                        width=-1, height=42,
                     )
                     dpg.bind_item_theme(start_btn, "theme_btn_primary")
+                    dpg.add_text("", tag="start_error_text", color=RED_ERROR)
 
-            dpg.add_text("", tag="start_error_text", color=RED_ERROR)
+                dpg.add_spacer(width=10)
+
+                # ━━ RIGHT COLUMN: Key Selection ━━━━━━━━━━━━━━━
+                with dpg.child_window(width=-1, height=COL_HEIGHT, border=True, tag="card_keys"):
+                    dpg.bind_item_theme("card_keys", "theme_card")
+
+                    self._section_heading("Key Selection")
+                    dpg.add_spacer(height=4)
+
+                    # Presets
+                    with dpg.group(horizontal=True):
+                        for lbl, cb in [
+                            ("C major only", lambda: self._preset_keys(["C"], "major")),
+                            ("All Major", lambda: self._preset_all("major")),
+                            ("All Minor", lambda: self._preset_all("minor")),
+                            ("Clear", self._clear_keys),
+                        ]:
+                            btn = dpg.add_button(label=lbl, callback=cb)
+                            dpg.bind_item_theme(btn, "theme_btn_secondary")
+
+                    dpg.add_spacer(height=8)
+                    dpg.add_text("Major:", color=TEXT_SECONDARY)
+                    for row_keys in [ALL_MAJOR_KEYS[:7], ALL_MAJOR_KEYS[7:]]:
+                        with dpg.group(horizontal=True):
+                            for key in row_keys:
+                                tag = f"key_{key.root}_{key.mode}"
+                                dpg.add_checkbox(
+                                    label=key.root,
+                                    default_value=(key.root == "C" and key.mode == "major"),
+                                    tag=tag,
+                                    callback=lambda s, a, k=key: self._toggle_key(k, a),
+                                )
+                                self._selected_key_checks[f"{key.root}_{key.mode}"] = (key.root == "C" and key.mode == "major")
+
+                    dpg.add_spacer(height=6)
+                    dpg.add_text("Minor:", color=TEXT_SECONDARY)
+                    for row_keys in [ALL_MINOR_KEYS[:6], ALL_MINOR_KEYS[6:]]:
+                        with dpg.group(horizontal=True):
+                            for key in row_keys:
+                                tag = f"key_{key.root}_{key.mode}"
+                                dpg.add_checkbox(
+                                    label=key.root,
+                                    default_value=False,
+                                    tag=tag,
+                                    callback=lambda s, a, k=key: self._toggle_key(k, a),
+                                )
+                                self._selected_key_checks[f"{key.root}_{key.mode}"] = False
 
     # ── Callbacks ────────────────────────────────────────────────
 

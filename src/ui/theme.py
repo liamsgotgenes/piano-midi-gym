@@ -51,9 +51,9 @@ def build_themes() -> None:
             dpg.add_theme_style(dpg.mvStyleVar_PopupRounding, 6)
             dpg.add_theme_style(dpg.mvStyleVar_ScrollbarRounding, 6)
             dpg.add_theme_style(dpg.mvStyleVar_TabRounding, 6)
-            dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 10, 8)
-            dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 10, 6)
-            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 20, 16)
+            dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 8, 5)
+            dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 8, 5)
+            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 14, 10)
             dpg.add_theme_style(dpg.mvStyleVar_ChildBorderSize, 1)
 
             dpg.add_theme_color(dpg.mvThemeCol_WindowBg, BG_DARK)
@@ -116,7 +116,7 @@ def build_themes() -> None:
             dpg.add_theme_color(dpg.mvThemeCol_ChildBg, BG_CARD)
             dpg.add_theme_color(dpg.mvThemeCol_Border, BORDER_SUBTLE)
             dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 10)
-            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 16, 12)
+            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 12, 8)
 
     # ── Accent card (highlighted section) ───────────────────────
     with dpg.theme(tag="theme_card_accent"):
@@ -124,7 +124,7 @@ def build_themes() -> None:
             dpg.add_theme_color(dpg.mvThemeCol_ChildBg, (30, 35, 55))
             dpg.add_theme_color(dpg.mvThemeCol_Border, ACCENT_BLUE)
             dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 10)
-            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 16, 12)
+            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 12, 8)
 
     # ── Success card ────────────────────────────────────────────
     with dpg.theme(tag="theme_card_success"):
@@ -132,7 +132,7 @@ def build_themes() -> None:
             dpg.add_theme_color(dpg.mvThemeCol_ChildBg, GREEN_SUCCESS_BG)
             dpg.add_theme_color(dpg.mvThemeCol_Border, GREEN_SUCCESS)
             dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 10)
-            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 16, 12)
+            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 12, 8)
 
     # ── Progress bar ────────────────────────────────────────────
     with dpg.theme(tag="theme_progress"):

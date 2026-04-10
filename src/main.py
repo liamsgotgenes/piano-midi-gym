@@ -25,7 +25,7 @@ class App:
 
     def run(self) -> None:
         dpg.create_context()
-        dpg.create_viewport(title="MIDI Reaction Trainer", width=960, height=750)
+        dpg.create_viewport(title="MIDI Reaction Trainer", width=1280, height=720)
 
         # Register fonts — Windows Segoe UI for clean look
         font_path = "C:/Windows/Fonts/segoeui.ttf"
